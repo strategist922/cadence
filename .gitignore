@@ -1,0 +1,11 @@
+target/
+*.class
+.idea
+*.iml
+.project
+.classpath
+.settings
+*~
+atlassian-ide-plugin.xml
+lib/
+dist/

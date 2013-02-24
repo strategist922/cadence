@@ -20,37 +20,48 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
+package org.robertroland.cadence.model;
 
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 /**
- * A Deserializer instance that uses the HBase Client API
+ * Abstraction of a HBase rowkey
  *
  * @author robert@robertroland.org
  * @since 2/24/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
+public class RowKey {
+    private final byte[] rowKey;
 
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
+    public RowKey(byte[] rowKey) {
+        this.rowKey = rowKey;
+    }
+
+    public byte[] getRowKey() {
+        return rowKey;
     }
 
     @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        Map<Object, Object> result = new HashMap<Object, Object>();
+        RowKey rowKey1 = (RowKey) o;
 
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
+        if (!Arrays.equals(rowKey, rowKey1.rowKey)) return false;
 
-        return result;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return rowKey != null ? Arrays.hashCode(rowKey) : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "RowKey{" +
+                "rowKey=" + rowKey +
+                '}';
     }
 }

@@ -22,8 +22,6 @@
 
 package org.robertroland.cadence.schema
 
-import org.robertroland.cadence.schema.SchemaValidatorImpl
-
 import static org.junit.Assert.*
 
 import org.junit.Test
@@ -38,16 +36,8 @@ class SchemaValidatorImplTest {
 
     @Test
     void validSchema() {
-        def validSchema = [
-                table: "facebook_post",
-                delimiter: "|",
-                key: [parts: [[name: "facebook_id", type: "SHA1"]]],
-                columns: [
-                        [name: "facebook_id", type: "String", family: "post"],
-                        [name: "created_at", type: "DateTime", family: "post"]
-                ]
-        ]
+        def validSchema = TestSchemas.facebookSchema()
 
-        org.junit.Assert.assertTrue instance.validateSchema(validSchema)
+        assertTrue instance.validateSchema(validSchema)
     }
 }

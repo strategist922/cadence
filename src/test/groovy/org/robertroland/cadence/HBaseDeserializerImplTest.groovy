@@ -25,18 +25,19 @@ package org.robertroland.cadence
 import org.apache.hadoop.hbase.KeyValue
 import org.apache.hadoop.hbase.client.Result
 import org.apache.hadoop.hbase.util.Bytes
+import org.robertroland.cadence.schema.TestSchemas
 
 import static org.junit.Assert.*
 
 import org.junit.Test
 
 /**
- * 
+ *
  * @author robert@robertroland.org
  * @since 2/24/13
  */
 class HBaseDeserializerImplTest {
-    def instance = new HBaseDeserializerImpl()
+    def instance = new HBaseDeserializerImpl(TestSchemas.facebookSchema())
 
     @Test
     void nullResultHandled() {
@@ -57,6 +58,16 @@ class HBaseDeserializerImplTest {
         assertNotNull instance.deserialize(result)
     }
 
+    @Test
+    void hasRowKey() {
+        def result = sampleResult()
+
+        def resultingMap = instance.deserialize(result)
+
+        assertArrayEquals(Bytes.toBytes("12345_6789"),
+                resultingMap.get("__rowkey").getRowKey())
+    }
+
     Result sampleResult() {
         def rowKey = Bytes.toBytes("12345_6789")
         def postFamily = Bytes.toBytes("post")
@@ -64,7 +75,16 @@ class HBaseDeserializerImplTest {
         def result = new Result([
                 new KeyValue(rowKey, postFamily,
                         Bytes.toBytes("facebook_id"),
-                        Bytes.toBytes("12345_6789"))
+                        Bytes.toBytes("12345_6789")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("created_at"),
+                        Bytes.toBytes(1353191589980L)),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("title"),
+                        Bytes.toBytes("a post title")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|count"),
+                        Bytes.toBytes(2))
         ])
 
         return result

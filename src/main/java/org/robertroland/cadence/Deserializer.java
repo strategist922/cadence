@@ -31,5 +31,11 @@ import java.util.Map;
  * @since 2/24/13
  */
 public interface Deserializer<T> {
+    /**
+     * Given a databaseResult, produce a result map
+     *
+     * @param databaseResult the response from the database (API agnostic)
+     * @return Map containing the results
+     */
     public Map<Object, Object> deserialize(T databaseResult);
 }

@@ -20,37 +20,23 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
-
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.robertroland.cadence.schema
 
 /**
- * A Deserializer instance that uses the HBase Client API
  *
  * @author robert@robertroland.org
  * @since 2/24/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
-
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
-    }
-
-    @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
-
-        Map<Object, Object> result = new HashMap<Object, Object>();
-
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
-
-        return result;
+class TestSchemas {
+    static Map<String, Object> facebookSchema() {
+        [
+                table: "facebook_post",
+                delimiter: "|",
+                key: [parts: [[name: "facebook_id", type: "SHA1"]]],
+                columns: [
+                        [name: "facebook_id", type: "String", family: "post"],
+                        [name: "created_at", type: "DateTime", family: "post"]
+                ]
+        ]
     }
 }

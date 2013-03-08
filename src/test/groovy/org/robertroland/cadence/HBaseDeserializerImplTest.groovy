@@ -55,7 +55,11 @@ class HBaseDeserializerImplTest {
     void fullResult() {
         def result = sampleResult()
 
+        def deserialized = instance.deserialize(result)
+
         assertNotNull instance.deserialize(result)
+        assertEquals "12345_6789", deserialized["facebook_id"]
+        assertEquals "a post title", deserialized["title"]
     }
 
     @Test
@@ -72,20 +76,28 @@ class HBaseDeserializerImplTest {
         def rowKey = Bytes.toBytes("12345_6789")
         def postFamily = Bytes.toBytes("post")
 
-        def result = new Result([
+        KeyValue[] kvs = [
                 new KeyValue(rowKey, postFamily,
                         Bytes.toBytes("facebook_id"),
+                        1234L,
                         Bytes.toBytes("12345_6789")),
                 new KeyValue(rowKey, postFamily,
                         Bytes.toBytes("created_at"),
-                        Bytes.toBytes(1353191589980L)),
+                        1234L,
+                        Bytes.toBytes("2012-12-31T16:45:00-0800")),
                 new KeyValue(rowKey, postFamily,
                         Bytes.toBytes("title"),
+                        1234L,
                         Bytes.toBytes("a post title")),
                 new KeyValue(rowKey, postFamily,
                         Bytes.toBytes("to|count"),
+                        1234L,
                         Bytes.toBytes(2))
-        ])
+        ]
+
+        Arrays.sort(kvs, KeyValue.COMPARATOR)
+
+        def result = new Result(kvs)
 
         return result
     }

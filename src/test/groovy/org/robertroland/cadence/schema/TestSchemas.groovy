@@ -22,21 +22,45 @@
 
 package org.robertroland.cadence.schema
 
+import org.robertroland.cadence.model.Field
+import org.robertroland.cadence.model.Schema
+
 /**
  *
  * @author robert@robertroland.org
  * @since 2/24/13
  */
 class TestSchemas {
-    static Map<String, Object> facebookSchema() {
-        [
-                table: "facebook_post",
-                delimiter: "|",
-                key: [parts: [[name: "facebook_id", type: "SHA1"]]],
-                columns: [
-                        [name: "facebook_id", type: "String", family: "post"],
-                        [name: "created_at", type: "DateTime", family: "post"]
-                ]
-        ]
+    static Schema facebookSchema() {
+        def schema = new Schema()
+
+        schema.table = "facebook_post"
+        schema.delimiter = "|"
+
+        def field = new Field()
+        field.columnName = "facebook_id"
+        field.typeName = "String"
+        field.formatter = "SHA1"
+        schema.compositeKey.add field
+
+        field = new Field()
+        field.columnFamily = "post"
+        field.columnName = "facebook_id"
+        field.typeName = "String"
+        schema.columns.add field
+
+        field = new Field()
+        field.columnFamily = "post"
+        field.columnName = "created_at"
+        field.typeName = "Date"
+        schema.columns.add field
+
+        field = new Field()
+        field.columnFamily = "post"
+        field.columnName = "title"
+        field.typeName = "String"
+        schema.columns.add field
+
+        return schema
     }
 }

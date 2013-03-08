@@ -20,38 +20,41 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
+package org.robertroland.cadence.types;
 
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-import org.robertroland.cadence.types.Serializer;
+import org.apache.hadoop.hbase.util.Bytes;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * A Deserializer instance that uses the HBase Client API
+ * Serializes a Date as an ISO-8601 string.
  *
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/7/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
+@TypeSerializer(typeName = "Date")
+public class DateSerializer implements Serializer<Date> {
+    private ThreadLocal<DateFormat> dateFormatISO = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        }
+    };
 
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
+    @Override
+    public Date deserialize(byte[] bytes) {
+        try {
+            return dateFormatISO.get().parse(Bytes.toString(bytes));
+        } catch(ParseException pe) {
+            throw new TypeDeserializerException("Unable to parse date", pe, bytes);
+        }
     }
 
     @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
-
-        Map<Object, Object> result = new HashMap<Object, Object>();
-
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
-
-        return result;
+    public byte[] serialize(Date object) {
+        return Bytes.toBytes(dateFormatISO.get().format(object));
     }
 }

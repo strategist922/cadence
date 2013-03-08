@@ -20,38 +20,26 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
-
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-import org.robertroland.cadence.types.Serializer;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.robertroland.cadence.types;
 
 /**
- * A Deserializer instance that uses the HBase Client API
- *
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/7/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
+public class TypeDeserializerException extends RuntimeException {
+    private byte[] bytes;
 
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
+    public TypeDeserializerException(String message, byte[] bytes) {
+        super(message);
+        this.bytes = bytes;
     }
 
-    @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
+    public TypeDeserializerException(String message, Throwable cause, byte[] bytes) {
+        super(message, cause);
+        this.bytes = bytes;
+    }
 
-        Map<Object, Object> result = new HashMap<Object, Object>();
-
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
-
-        return result;
+    public byte[] getBytes() {
+        return bytes;
     }
 }

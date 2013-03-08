@@ -20,38 +20,25 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
+package org.robertroland.cadence.types;
 
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-import org.robertroland.cadence.types.Serializer;
+import org.apache.hadoop.hbase.util.Bytes;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
 
 /**
- * A Deserializer instance that uses the HBase Client API
- *
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/7/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
-
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
+@TypeSerializer(typeName = "BigDecimal")
+public class BigDecimalSerializer implements Serializer<BigDecimal> {
+    @Override
+    public BigDecimal deserialize(byte[] bytes) {
+        return Bytes.toBigDecimal(bytes);
     }
 
     @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
-
-        Map<Object, Object> result = new HashMap<Object, Object>();
-
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
-
-        return result;
+    public byte[] serialize(BigDecimal object) {
+        return Bytes.toBytes(object);
     }
 }

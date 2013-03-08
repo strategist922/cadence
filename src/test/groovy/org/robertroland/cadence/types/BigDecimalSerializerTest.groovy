@@ -20,38 +20,28 @@
  * SOFTWARE.
  */
 
-package org.robertroland.cadence;
+package org.robertroland.cadence.types
 
-import org.apache.hadoop.hbase.client.Result;
-import org.robertroland.cadence.model.RowKey;
-import org.robertroland.cadence.types.Serializer;
+import org.apache.hadoop.hbase.util.Bytes
+import org.junit.Test
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.*
 
 /**
- * A Deserializer instance that uses the HBase Client API
- *
+ * 
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/7/13
  */
-public class HBaseDeserializerImpl implements Deserializer<Result> {
-    private Map<String, Object> schema;
+class BigDecimalSerializerTest {
+    def serializer = new BigDecimalSerializer();
 
-    public HBaseDeserializerImpl(Map<String, Object> schema) {
-        this.schema = schema;
+    @Test
+    void testDeserialize() {
+        assertEquals new BigDecimal("100.12"), serializer.deserialize(Bytes.toBytes(new BigDecimal("100.12")))
     }
 
-    @Override
-    public Map<Object, Object> deserialize(Result databaseResult) {
-        if(databaseResult == null) {
-            return null;
-        }
-
-        Map<Object, Object> result = new HashMap<Object, Object>();
-
-        result.put("__rowkey", new RowKey(databaseResult.getRow()));
-
-        return result;
+    @Test
+    void testSerialize() {
+        assertArrayEquals Bytes.toBytes(new BigDecimal("123412.12")), serializer.serialize(new BigDecimal("123412.12"))
     }
 }

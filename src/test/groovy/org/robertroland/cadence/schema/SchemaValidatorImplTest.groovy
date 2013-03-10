@@ -36,7 +36,7 @@ class SchemaValidatorImplTest {
 
     @Test
     void validSchema() {
-        def validSchema = TestSchemas.facebookSchema()
+        def validSchema = TestSchemas.fullSchema()
 
         assertTrue instance.validateSchema(validSchema)
     }

@@ -22,6 +22,11 @@
 
 package org.robertroland.cadence.model;
 
+import com.google.common.collect.Lists;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author robert@robertroland.org
  * @since 3/8/13
@@ -31,6 +36,9 @@ public class Field {
     private String columnName;
     private String typeName;
     private String formatter;
+    private Field parent;
+    private List<Field> mapFields;
+    private String listElementType;
 
     public Field() {
     }
@@ -65,6 +73,42 @@ public class Field {
 
     public void setFormatter(String formatter) {
         this.formatter = formatter;
+    }
+
+    public Field getParent() {
+        return parent;
+    }
+
+    public void setParent(Field parent) {
+        this.parent = parent;
+    }
+
+    public String getListElementType() {
+        return listElementType;
+    }
+
+    public void setListElementType(String listElementType) {
+        this.listElementType = listElementType;
+    }
+
+    public boolean hasMapFields() {
+        return mapFields != null;
+    }
+
+    public void addMapField(Field field) {
+        if(mapFields == null) {
+            mapFields = Lists.newArrayList();
+        }
+
+        mapFields.add(field);
+    }
+
+    public List<Field> mapFields() {
+        if(mapFields == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return Collections.unmodifiableList(this.mapFields);
     }
 
     @Override

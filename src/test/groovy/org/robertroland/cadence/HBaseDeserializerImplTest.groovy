@@ -37,7 +37,7 @@ import org.junit.Test
  * @since 2/24/13
  */
 class HBaseDeserializerImplTest {
-    def instance = new HBaseDeserializerImpl(TestSchemas.facebookSchema())
+    def instance = new HBaseDeserializerImpl(TestSchemas.fullSchema())
 
     @Test
     void nullResultHandled() {
@@ -57,9 +57,23 @@ class HBaseDeserializerImplTest {
 
         def deserialized = instance.deserialize(result)
 
-        assertNotNull instance.deserialize(result)
-        assertEquals "12345_6789", deserialized["facebook_id"]
-        assertEquals "a post title", deserialized["title"]
+        assertNotNull "instance is not null", deserialized
+        assertEquals "post_id is correct", "12345_6789", deserialized["post_id"]
+        assertEquals "post title is correct", "a post title", deserialized["title"]
+
+        assertEquals "testList has the correct number of items", 3, deserialized["testList"].size()
+        assertEquals "first entry in testList is correct", "one", deserialized["testList"][0]
+        assertEquals "second entry in testList is correct", "two", deserialized["testList"][1]
+        assertEquals "third entry in testList is correct", "three", deserialized["testList"][2]
+
+        assertEquals "to has the correct number of items", 2, deserialized["to"].size()
+        assertEquals "to's first item has the right id", "user1", deserialized["to"][0]["id"]
+        assertEquals "to's first item has the right name", "User Name 1", deserialized["to"][0]["name"]
+        assertEquals "to's first item has the right link", "http://example.org/user1", deserialized["to"][0]["link"]
+
+        assertEquals "there should be two trackingIds", 2, deserialized["metadata"]["trackingIds"].size()
+
+        assertEquals "customer name should match", "customer1", deserialized["metadata"]["customer"]["name"]
     }
 
     @Test
@@ -75,10 +89,11 @@ class HBaseDeserializerImplTest {
     Result sampleResult() {
         def rowKey = Bytes.toBytes("12345_6789")
         def postFamily = Bytes.toBytes("post")
+        def metadataFamily = Bytes.toBytes("metadata")
 
         KeyValue[] kvs = [
                 new KeyValue(rowKey, postFamily,
-                        Bytes.toBytes("facebook_id"),
+                        Bytes.toBytes("post_id"),
                         1234L,
                         Bytes.toBytes("12345_6789")),
                 new KeyValue(rowKey, postFamily,
@@ -90,9 +105,65 @@ class HBaseDeserializerImplTest {
                         1234L,
                         Bytes.toBytes("a post title")),
                 new KeyValue(rowKey, postFamily,
-                        Bytes.toBytes("to|count"),
+                        Bytes.toBytes("to|_count"),
                         1234L,
-                        Bytes.toBytes(2))
+                        Bytes.toBytes(2L)),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 0L) + "|name"),
+                        1234L,
+                        Bytes.toBytes("User Name 1")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 0L) + "|id"),
+                        1234L,
+                        Bytes.toBytes("user1")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 0L) + "|link"),
+                        1234L,
+                        Bytes.toBytes("http://example.org/user1")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 1L) + "|name"),
+                        1234L,
+                        Bytes.toBytes("User Name 2")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 1L) + "|id"),
+                        1234L,
+                        Bytes.toBytes("user2")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("to|" + String.format("%019d", 1L) + "|link"),
+                        1234L,
+                        Bytes.toBytes("http://example.org/user2")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("testList|_count"),
+                        1234L,
+                        Bytes.toBytes(3L)),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("testList|" + String.format("%019d", 0L)),
+                        1234L,
+                        Bytes.toBytes("one")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("testList|" + String.format("%019d", 1L)),
+                        1234L,
+                        Bytes.toBytes("two")),
+                new KeyValue(rowKey, postFamily,
+                        Bytes.toBytes("testList|" + String.format("%019d", 2L)),
+                        1234L,
+                        Bytes.toBytes("three")),
+                new KeyValue(rowKey, metadataFamily,
+                        Bytes.toBytes("metadata|trackingIds|_count"),
+                        1234L,
+                        Bytes.toBytes(2L)),
+                new KeyValue(rowKey, metadataFamily,
+                        Bytes.toBytes("metadata|trackingIds|" + String.format("%019d", 0L)),
+                        1234L,
+                        Bytes.toBytes("tracking1")),
+                new KeyValue(rowKey, metadataFamily,
+                        Bytes.toBytes("metadata|trackingIds|" + String.format("%019d", 1L)),
+                        1234L,
+                        Bytes.toBytes("tracking2")),
+                new KeyValue(rowKey, metadataFamily,
+                        Bytes.toBytes("metadata|customer|name"),
+                        1234L,
+                        Bytes.toBytes("customer1")),
         ]
 
         Arrays.sort(kvs, KeyValue.COMPARATOR)

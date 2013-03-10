@@ -44,14 +44,15 @@ class DateSerializerTest {
         def date = dateFormat.parse(stringRepresentation)
 
         assertEquals date, serializer.deserialize(Bytes.toBytes(stringRepresentation))
+
     }
 
     @Test
     void testSerialize() {
         def dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
         def stringRepresentation = "2013-03-07T23:41:00-0800"
+        def date = dateFormat.parse(stringRepresentation)
 
-        assertArrayEquals Bytes.toBytes(stringRepresentation),
-                serializer.serialize(dateFormat.parse(stringRepresentation))
+        assertEquals date, serializer.deserialize(serializer.serialize(date))
     }
 }

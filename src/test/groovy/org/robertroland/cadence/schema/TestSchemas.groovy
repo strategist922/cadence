@@ -31,21 +31,21 @@ import org.robertroland.cadence.model.Schema
  * @since 2/24/13
  */
 class TestSchemas {
-    static Schema facebookSchema() {
+    static Schema fullSchema() {
         def schema = new Schema()
 
-        schema.table = "facebook_post"
+        schema.table = "post"
         schema.delimiter = "|"
 
         def field = new Field()
-        field.columnName = "facebook_id"
+        field.columnName = "post_id"
         field.typeName = "String"
         field.formatter = "SHA1"
         schema.compositeKey.add field
 
         field = new Field()
         field.columnFamily = "post"
-        field.columnName = "facebook_id"
+        field.columnName = "post_id"
         field.typeName = "String"
         schema.columns.add field
 
@@ -60,6 +60,71 @@ class TestSchemas {
         field.columnName = "title"
         field.typeName = "String"
         schema.columns.add field
+
+        field = new Field()
+        field.columnFamily = "post"
+        field.columnName = "testList"
+        field.typeName = "List"
+        field.listElementType = "String"
+        schema.columns.add field
+
+        field = new Field()
+        field.columnFamily = "post"
+        field.columnName = "to"
+        field.typeName = "List"
+        field.listElementType = "Map"
+
+        def toField = new Field()
+        toField.columnFamily = "post"
+        toField.columnName = "name"
+        toField.typeName = "String"
+        toField.parent = field
+        field.addMapField toField
+
+        toField = new Field()
+        toField.columnFamily = "post"
+        toField.columnName = "id"
+        toField.typeName = "String"
+        toField.parent = field
+        field.addMapField toField
+
+        toField = new Field()
+        toField.columnFamily = "post"
+        toField.columnName = "link"
+        toField.typeName = "String"
+        toField.parent = field
+        field.addMapField toField
+
+        schema.columns.add field
+
+        def metadata = new Field()
+        metadata.columnFamily = "metadata"
+        metadata.columnName = "metadata"
+        metadata.typeName = "Map"
+
+        def mapField = new Field()
+        mapField.columnFamily = "metadata"
+        mapField.columnName = "customer"
+        mapField.typeName = "Map"
+        mapField.parent = metadata
+        metadata.addMapField mapField
+
+        def innerMapField = new Field()
+        innerMapField.columnFamily = "metadata"
+        innerMapField.columnName = "name"
+        innerMapField.typeName = "String"
+        innerMapField.parent = mapField
+        mapField.addMapField innerMapField
+
+        field = new Field()
+        field.columnName = "trackingIds"
+        field.columnFamily = "metadata"
+        field.typeName = "List"
+        field.listElementType = "String"
+        field.parent = metadata
+        metadata.addMapField field
+
+        schema.columns.add metadata
 
         return schema
     }

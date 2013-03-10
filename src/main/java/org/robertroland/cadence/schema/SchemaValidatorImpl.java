@@ -22,7 +22,7 @@
 
 package org.robertroland.cadence.schema;
 
-import java.util.Map;
+import org.robertroland.cadence.model.Schema;
 
 /**
  * @author robert@robertroland.org
@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class SchemaValidatorImpl implements SchemaValidator {
     @Override
-    public boolean validateSchema(Map<String, Object> schema) {
+    public boolean validateSchema(Schema schema) {
         //TODO: umm, implement this
 
         return true;

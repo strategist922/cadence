@@ -24,12 +24,17 @@ package org.robertroland.cadence.schema;
 
 import org.robertroland.cadence.model.Schema;
 
+import java.util.Map;
+
 /**
- * Validate schema maps
+ * Translate a cadence schema from a Map to a full cadence schema
  *
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/10/13
  */
-public interface SchemaValidator {
-    public boolean validateSchema(Schema schema);
+public class MapSchemaAdapterImpl implements SchemaAdapter<Map> {
+    @Override
+    public Schema translateSchema(Map sourceSchema) {
+        return null;
+    }
 }

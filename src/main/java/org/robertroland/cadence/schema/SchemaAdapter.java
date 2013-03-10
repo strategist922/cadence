@@ -25,11 +25,17 @@ package org.robertroland.cadence.schema;
 import org.robertroland.cadence.model.Schema;
 
 /**
- * Validate schema maps
+ * Translate a schema from one source type to an internal cadence schema
  *
  * @author robert@robertroland.org
- * @since 2/24/13
+ * @since 3/10/13
  */
-public interface SchemaValidator {
-    public boolean validateSchema(Schema schema);
+public interface SchemaAdapter<T> {
+    /**
+     * Translate a schema to a full cadence schema. Implementers should validate schema as part of translation!
+     *
+     * @param sourceSchema source schema (type is left to the implementer)
+     * @return a valid schema
+     */
+    public Schema translateSchema(T sourceSchema);
 }
